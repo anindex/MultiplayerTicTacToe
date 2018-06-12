@@ -1,3 +1,5 @@
+enum PlayerState {AVAILABLE, INMATCH};
+
 class Player
 {
   public int win;
