@@ -126,6 +126,11 @@ class Grid
   return cells[x / res][y / res]; 
  }  
  
+ public Coordinate retrieveCellIndex(int x, int y)
+ {
+   return new Coordinate(x / res, y / res); 
+ } 
+ 
  public void clicked(int mX, int mY, CellType type) // will add sprite
  {
    Cell cell = retrieveCell(mX, mY);
@@ -154,5 +159,16 @@ class Grid
    }
    
    return newGrid;
+ }
+ 
+ public void clearMark()
+ {
+   for(Cell[] cellCol : cells)
+   {
+     for(Cell cell : cellCol)
+     {     
+       cell.type = CellType.BLANK;
+     }   
+   }
  }
 }

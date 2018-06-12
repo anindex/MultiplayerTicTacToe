@@ -1,4 +1,6 @@
 Grid grid;
+GameEngine game;
+Player player;
 
 public static final int RESOLUTION = 20;
 boolean started = true;
@@ -11,6 +13,11 @@ void setup()
   {
     grid = new Grid(width, height, RESOLUTION);
     grid.loadSprites("sprites/cross.png", "sprites/nought.png");
+    
+    player = new Player("anindex");
+    player.markType = CellType.CROSS;
+    
+    game = new GameEngine(grid, player);
   }
   catch (InvalidResolution e)
   {
@@ -22,7 +29,12 @@ void draw()
 {
   if(started)
   { 
-    grid.drawMap();
+    game.gameState.drawMap();
+    if(game.checkEndGame() == GameCondition.WIN)
+    {
+      System.out.println("Player CROSS win!");
+      game.gameState.clearMark();
+    }
   }
 }
 
@@ -30,10 +42,12 @@ void mouseClicked()
 {
   if(mouseButton == LEFT)
   {
-    grid.clicked(mouseX, mouseY, CellType.CROSS);
+    game.gameState.clicked(mouseX, mouseY, CellType.CROSS);
+    game.player.lastMove = game.gameState.retrieveCellIndex(mouseX, mouseY);
+    game.player.lastMove.print();
   }
   else if(mouseButton == RIGHT)
   {
-    grid.clicked(mouseX, mouseY, CellType.NOUGHT);
+    game.gameState.clicked(mouseX, mouseY, CellType.NOUGHT);
   }
 }

@@ -16,6 +16,11 @@ class Coordinate
     this.x = x;
     this.y = y;
   }
+  
+  public void print()
+  {
+    System.out.println("x: " + x + ", y: " + y);
+  }
 }
 
 
