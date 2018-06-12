@@ -1,3 +1,5 @@
+import g4p_controls.*;
+
 Grid grid;
 GameEngine game;
 Player player;
@@ -7,7 +9,7 @@ boolean started = true;
 
 void setup()
 {
-  size(301, 301);
+  size(601, 601, JAVA2D);
   
   try
   {
@@ -23,6 +25,8 @@ void setup()
   {
     started = false;
   }
+  
+  createGUI();
 }
 
 void draw()
@@ -30,11 +34,6 @@ void draw()
   if(started)
   { 
     game.gameState.drawMap();
-    if(game.checkEndGame() == GameCondition.WIN)
-    {
-      System.out.println("Player CROSS win!");
-      game.gameState.clearMark();
-    }
   }
 }
 
