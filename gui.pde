@@ -14,37 +14,46 @@
  * =========================================================
  */
 
-public void textarea1_change1(GTextArea source, GEvent event) { //_CODE_:textarea1:694642:
-  println("textarea1 - GTextArea >> GEvent." + event + " @ " + millis());
-} //_CODE_:textarea1:694642:
-
-public void textfield1_change1(GTextField source, GEvent event) { //_CODE_:textfield1:342767:
-  println("textfield1 - GTextField >> GEvent." + event + " @ " + millis());
-} //_CODE_:textfield1:342767:
-
-public void button1_click1(GButton source, GEvent event) { //_CODE_:button1:877934:
-  println("button1 - GButton >> GEvent." + event + " @ " + millis());
-} //_CODE_:button1:877934:
-
-public void textfield2_change1(GTextField source, GEvent event) { //_CODE_:textfield2:603782:
-  println("textfield2 - GTextField >> GEvent." + event + " @ " + millis());
-} //_CODE_:textfield2:603782:
-
 synchronized public void win_draw1(PApplet appc, GWinData data) { //_CODE_:window1:964564:
   appc.background(230);
 } //_CODE_:window1:964564:
 
-public void button2_click1(GButton source, GEvent event) { //_CODE_:button2:298534:
-  println("button2 - GButton >> GEvent." + event + " @ " + millis());
-} //_CODE_:button2:298534:
+synchronized public void win_draw2(PApplet appc, GWinData data) { //_CODE_:window1:964564:
+  appc.background(230);
+} //_CODE_:window1:964564:
 
-public void button3_click1(GButton source, GEvent event) { //_CODE_:button3:403542:
-  println("button3 - GButton >> GEvent." + event + " @ " + millis());
-} //_CODE_:button3:403542:
+synchronized public void win_draw3(PApplet appc, GWinData data) { //_CODE_:window1:964564:
+  appc.background(230);
+} //_CODE_:window1:964564:
 
 public void button4_click1(GButton source, GEvent event) { //_CODE_:button3:403542:
   println("button4 - GButton >> GEvent." + event + " @ " + millis());
 } //_CODE_:button3:403542:
+
+public void button_connect(GButton source, GEvent event) { 
+  server.button_connect();
+} 
+
+public void button_yes(GButton source, GEvent event) { 
+  if(server.inHandshake != null)
+  {
+    server.inHandshake.connection.button_yes();
+  }
+} 
+
+public void button_no(GButton source, GEvent event) { 
+  if(server.inHandshake != null)
+  {
+    server.inHandshake.connection.button_no();
+  }
+} 
+
+public void name_change(GTextField source, GEvent event) { 
+  if(event == GEvent.LOST_FOCUS)
+  {
+    server.game.name_change();
+  } 
+} 
 
 
 
@@ -67,7 +76,6 @@ public void createGUI(){
   label1.setOpaque(false);
   textarea1 = new GTextArea(window0, 9, 74, 117, 215, G4P.SCROLLBARS_VERTICAL_ONLY | G4P.SCROLLBARS_AUTOHIDE);
   textarea1.setOpaque(true);
-  textarea1.addEventHandler(this, "textarea1_change1");
   label2 = new GLabel(window0, 5, 45, 120, 23);
   label2.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
   label2.setText("Available Hosts");
@@ -76,14 +84,14 @@ public void createGUI(){
   textfield1 = new GTextField(window0, 134, 74, 145, 28, G4P.SCROLLBARS_NONE);
   textfield1.setPromptText("Enter host:");
   textfield1.setOpaque(true);
-  textfield1.addEventHandler(this, "textfield1_change1");
   button1 = new GButton(window0, 166, 168, 73, 18);
   button1.setText("Connect");
   button1.setTextBold();
-  button1.addEventHandler(this, "button1_click1");
+  button1.addEventHandler(this, "button_connect");
   textfield2 = new GTextField(window0, 136, 118, 143, 28, G4P.SCROLLBARS_NONE);
+  textfield2.setPromptText("Enter name:");
   textfield2.setOpaque(true);
-  textfield2.addEventHandler(this, "textfield2_change1");
+  textfield2.addEventHandler(this, "name_change");
   label3 = new GLabel(window0, 178, 275, 119, 20);
   label3.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
   label3.setText("Copyright@VGU");
@@ -91,28 +99,28 @@ public void createGUI(){
   label3.setOpaque(false);
   window0.loop();
   
-  window1 = GWindow.getWindow(this, "Challenge popup", 0, 0, 240, 120, JAVA2D);
+  window1 = GWindow.getWindow(this, "Challenge popup", 0, 0, 240, 160, JAVA2D);
   window1.noLoop();
   window1.setActionOnClose(G4P.CLOSE_WINDOW);
-  window1.addDrawHandler(this, "win_draw1");
-  label4 = new GLabel(window1, 27, 12, 164, 17);
+  window1.addDrawHandler(this, "win_draw2");
+  label4 = new GLabel(window1, 27, 12, 164, 30);
   label4.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
-  label4.setText("Challenge invitation!!");
   label4.setTextBold();
   label4.setOpaque(false);
   button2 = new GButton(window1, 18, 60, 80, 30);
   button2.setText("Yes");
   button2.setTextBold();
-  button2.addEventHandler(this, "button2_click1");
+  button2.addEventHandler(this, "button_yes");
   button3 = new GButton(window1, 128, 60, 80, 30);
   button3.setText("No");
-  button3.addEventHandler(this, "button3_click1");
+  button3.setTextBold();
+  button3.addEventHandler(this, "button_no");
   window1.loop();
   
   window2 = GWindow.getWindow(this, "Match stats", 0, 0, 240, 60, JAVA2D);
   window2.noLoop();
   window2.setActionOnClose(G4P.CLOSE_WINDOW);
-  window2.addDrawHandler(this, "win_draw1");
+  window2.addDrawHandler(this, "win_draw3");
   label5 = new GLabel(window2, 20, 10, 100, 17);
   label5.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
   label5.setText("Player 1: 0");

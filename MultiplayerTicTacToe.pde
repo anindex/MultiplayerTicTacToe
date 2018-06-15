@@ -4,6 +4,8 @@ Grid grid;
 GameEngine game;
 Player player;
 
+ConnectionEngine server;
+
 public static final int RESOLUTION = 20;
 boolean started = true;
 
@@ -16,17 +18,23 @@ void setup()
     grid = new Grid(width, height, RESOLUTION);
     grid.loadSprites("sprites/cross.png", "sprites/nought.png");
     
-    player = new Player("anindex");
+    player = new Player();
     player.markType = CellType.CROSS;
     
     game = new GameEngine(grid, player);
+    
+    server = new ConnectionEngine(game);
   }
   catch (InvalidResolution e)
   {
     started = false;
   }
-  
+ 
   createGUI();
+  window1.setVisible(false);
+  window2.setVisible(false);
+  
+  server.run();
 }
 
 void draw()
@@ -42,8 +50,6 @@ void mouseClicked()
   if(mouseButton == LEFT)
   {
     game.gameState.clicked(mouseX, mouseY, CellType.CROSS);
-    game.player.lastMove = game.gameState.retrieveCellIndex(mouseX, mouseY);
-    game.player.lastMove.print();
   }
   else if(mouseButton == RIGHT)
   {

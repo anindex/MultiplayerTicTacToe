@@ -1,5 +1,3 @@
-enum PlayerState {AVAILABLE, INMATCH};
-
 class Player
 {
   public int win;
@@ -13,14 +11,14 @@ class Player
   public Coordinate lastMove;
   public CellType markType; // depend on current setting 
   
-  Player(String name)
+  Player()
   {
     this.win = 0;
     this.lose = 0;
     this.totalWin = 0;
     this.totalLose = 0;
     
-    this.name = name;
+    this.name = "";
     lastMove = new Coordinate();
   }
 }

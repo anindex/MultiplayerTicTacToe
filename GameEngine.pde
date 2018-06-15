@@ -119,4 +119,9 @@ class GameEngine //this class is singleton
     
     return GameCondition.CONTINUE;
   }
+  
+  public void name_change()
+  {
+    this.player.name = textfield2.getText();
+  }
 }
