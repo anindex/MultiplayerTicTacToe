@@ -60,6 +60,7 @@ class ConnectionEngine extends Thread
 
         if (connection.connected)
         {
+          connection.start();
           clients.add(connection);
         }
 
@@ -102,6 +103,7 @@ class ConnectionEngine extends Thread
 
       if (connection.connected)
       {
+        connection.start();
         clients.add(connection);
       }
       inHandshake.connection = null;

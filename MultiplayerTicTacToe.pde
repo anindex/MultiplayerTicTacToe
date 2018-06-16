@@ -34,7 +34,7 @@ void setup()
   window1.setVisible(false);
   window2.setVisible(false);
   
-  server.run();
+  server.start();
 }
 
 void draw()
@@ -49,6 +49,9 @@ void mouseClicked()
 {
   if(mouseButton == LEFT)
   {
-    game.gameState.clicked(mouseX, mouseY, CellType.CROSS);
+    if(server.serverStatus.state == ServerState.MATCHING)
+    {
+      server.processGameTurn(mouseX, mouseY);
+    }
   }
 }
