@@ -67,7 +67,7 @@ public void createGUI(){
   
   window0 = GWindow.getWindow(this, "Main Menu", 0, 0, 301, 301, JAVA2D);
   window0.noLoop();
-  window0.setActionOnClose(G4P.CLOSE_WINDOW);
+  window0.setActionOnClose(G4P.KEEP_OPEN);
   window0.addDrawHandler(this, "win_draw1");
   label1 = new GLabel(window0, 99, 5, 91, 29);
   label1.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);

@@ -131,6 +131,11 @@ class Grid
    return new Coordinate(x / res, y / res); 
  } 
  
+ public Coordinate retrieveCellIndex(Coordinate pos)
+ {
+   return new Coordinate(pos.x / res, pos.y / res); 
+ }
+ 
  public void clicked(int mX, int mY, CellType type) // will add sprite
  {
    Cell cell = retrieveCell(mX, mY);

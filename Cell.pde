@@ -21,6 +21,47 @@ class Coordinate
   {
     System.out.println("x: " + x + ", y: " + y);
   }
+  
+  public String toString()
+  {
+    return x + "," + y;
+  }
+}
+
+class MarkedCoordinate extends Coordinate
+{
+  public CellType type;
+  
+  MarkedCoordinate()
+  {  
+    super();
+  }
+  
+  MarkedCoordinate(int x, int y)
+  {  
+    super(x, y);
+  }
+  
+  public void print()
+  {
+    System.out.println(type + " x: " + x + ", y: " + y);
+  }
+  
+  public String toString()
+  {
+    if(type == CellType.CROSS)
+    {
+      return "C-" + super.toString();
+    }
+    else if(type == CellType.NOUGHT)
+    {
+      return "N-" + super.toString();
+    }
+    else
+    {
+      return super.toString();
+    }
+  }
 }
 
 

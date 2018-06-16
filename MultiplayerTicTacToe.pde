@@ -51,8 +51,4 @@ void mouseClicked()
   {
     game.gameState.clicked(mouseX, mouseY, CellType.CROSS);
   }
-  else if(mouseButton == RIGHT)
-  {
-    game.gameState.clicked(mouseX, mouseY, CellType.NOUGHT);
-  }
 }

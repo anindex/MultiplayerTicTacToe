@@ -1,9 +1,11 @@
 enum GameCondition {DRAW, WIN, LOSE, CONTINUE};
 
-class GameEngine //this class is singleton
+class GameEngine extends Thread
 {
   public Grid gameState;
   public Player player;
+  
+  public MarkedCoordinate lastUpdate;
   
   public boolean inTurned;
   
@@ -13,9 +15,15 @@ class GameEngine //this class is singleton
   {
     this.gameState = gameState;
     this.player = player;
+    this.lastUpdate = new MarkedCoordinate();
     
-    inTurned = true;
-    spaceLeft = gameState.cells.length * gameState.cells[0].length;
+    this.inTurned = true;
+    this.spaceLeft = gameState.cells.length * gameState.cells[0].length; // for checking draw condition
+  }
+  
+  public void run()
+  {
+    
   }
   
   public GameCondition checkEndGame()
@@ -118,6 +126,14 @@ class GameEngine //this class is singleton
     }
     
     return GameCondition.CONTINUE;
+  }
+  
+  public void updateCell(Coordinate pos, CellType type)
+  {
+    gameState.cells[pos.x][pos.y].type = type;
+    lastUpdate.x = pos.x;
+    lastUpdate.x = pos.y;
+    lastUpdate.type = type;
   }
   
   public void name_change()
