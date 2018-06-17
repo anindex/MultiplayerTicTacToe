@@ -16,4 +16,17 @@ class Player
     this.name = "";
     lastMove = new Coordinate();
   }
+  
+  public void reset()
+  {
+    this.win = 0;
+    this.lose = 0;
+    
+    lastMove = new Coordinate();
+  }
+  
+  public String print()
+  {
+    return this.name + ","  + String.valueOf(this.win);
+  }
 }

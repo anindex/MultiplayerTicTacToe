@@ -18,6 +18,8 @@ class Grid
  private int cellRows;
  private int cellCols;
  
+ public int spaceLeft;// for checking draw condition
+ 
  Grid(int screenWidth, int screenHeight, int res) throws InvalidResolution
  {
    this.res = res;
@@ -43,6 +45,8 @@ class Grid
    {
      throw new InvalidResolution();
    }
+   
+   this.spaceLeft = cells.length * cells[0].length; // for checking draw condition
  }
  
  private void drawCells() 
@@ -175,5 +179,7 @@ class Grid
        cell.type = CellType.BLANK;
      }   
    }
+   
+   this.spaceLeft = cells.length * cells[0].length;
  }
 }

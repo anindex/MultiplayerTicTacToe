@@ -35,16 +35,16 @@ public void button_connect(GButton source, GEvent event) {
 } 
 
 public void button_yes(GButton source, GEvent event) { 
-  if(server.inHandshake != null)
+  if(server.inPromt != null)
   {
-    server.inHandshake.connection.button_yes();
+    server.inPromt.connection.button_yes();
   }
 } 
 
 public void button_no(GButton source, GEvent event) { 
-  if(server.inHandshake != null)
+  if(server.inPromt != null)
   {
-    server.inHandshake.connection.button_no();
+    server.inPromt.connection.button_no();
   }
 } 
 

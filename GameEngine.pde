@@ -1,15 +1,16 @@
 enum GameCondition {DRAW, WIN, LOSE, CONTINUE};
 
-class GameEngine extends Thread
+class GameEngine
 {
   public Grid gameState;
   public Player player;
   
+  public Player player1;
+  public Player player2;
+  
   public MarkedCoordinate lastUpdate;
   
   public boolean inTurned;
-  
-  public int spaceLeft;
   
   public GameEngine(Grid gameState, Player player)
   {
@@ -17,20 +18,17 @@ class GameEngine extends Thread
     this.player = player;
     this.lastUpdate = new MarkedCoordinate();
     
-    this.inTurned = true;
-    this.spaceLeft = gameState.cells.length * gameState.cells[0].length; // for checking draw condition
-  }
-  
-  public void run()
-  {
+    this.player1 = new Player();
+    this.player2 = new Player();
     
+    this.inTurned = true;
   }
   
   public GameCondition checkEndGame()
   {
     if(inTurned)
     {
-      spaceLeft--;
+      gameState.spaceLeft--;
       
       int w = gameState.cells.length;
       int h = gameState.cells[0].length;
@@ -119,7 +117,7 @@ class GameEngine extends Thread
          }
       }
       
-      if(spaceLeft == 0)
+      if(gameState.spaceLeft == 0)
       {
         return GameCondition.DRAW;
       }
@@ -132,7 +130,7 @@ class GameEngine extends Thread
   {
     gameState.cells[pos.x][pos.y].type = type;
     lastUpdate.x = pos.x;
-    lastUpdate.x = pos.y;
+    lastUpdate.y = pos.y;
     lastUpdate.type = type;
   }
   

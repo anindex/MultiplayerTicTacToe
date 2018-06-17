@@ -10,7 +10,9 @@ class ConnectionEngine extends Thread
   public static final String RESPONSE_SERVER_STATUS = "STATUS";
   public static final String RESPONSE_GAME_STATE = "GAMESTATE";
   public static final String RESPONSE_GAME_UPDATE = "GAMEUPDATE";
-
+  public static final String RESPONSE_CLEAR_MAP = "CLEARMAP";
+  public static final String RESPONSE_PLAYER_STAT = "PLAYERSTAT";
+  
   public static final String INVALID = "INVALID";
   public static final String BYE = "BYE";
 
@@ -19,7 +21,7 @@ class ConnectionEngine extends Thread
 
   public ArrayList<ConnectionHandler> clients;
 
-  public ConnectionHandlerRef inHandshake; // a hack to update matching connection
+  public ConnectionHandlerRef inPromt; // a hack to update matching connection
 
   public ServerSocket serverSocket;
 
@@ -31,7 +33,7 @@ class ConnectionEngine extends Thread
 
 
     clients = new ArrayList<ConnectionHandler>();
-    inHandshake = new ConnectionHandlerRef();
+    inPromt = new ConnectionHandlerRef();
 
     try
     {
@@ -55,7 +57,7 @@ class ConnectionEngine extends Thread
         Socket incommingConnection = serverSocket.accept();
 
         ConnectionHandler connection = new ConnectionHandler(incommingConnection, this.serverStatus, game, clients, false);
-        inHandshake.connection = connection;
+        inPromt.connection = connection;
         connection.handshake();
 
         if (connection.connected)
@@ -64,7 +66,7 @@ class ConnectionEngine extends Thread
           clients.add(connection);
         }
 
-        inHandshake.connection = null;
+        inPromt.connection = null;
         System.out.println(clients.size());
       }
       catch(Exception e)
@@ -82,15 +84,32 @@ class ConnectionEngine extends Thread
     {
       game.updateCell(move, game.player.markType);
       game.inTurned = false;
-
-      for (ConnectionHandler viewer : clients)
+      GameCondition gameStatus = game.checkEndGame();
+      
+      if(gameStatus == GameCondition.CONTINUE)
       {
-        viewer.sendLine.println(viewer.processRequest(ClientRequest.GET_GAME_UPDATE)); // send move decision to all listener, including matching component
+        for (ConnectionHandler viewer : clients)
+        {
+          viewer.sendLine.println(viewer.processRequest(ClientRequest.GET_GAME_UPDATE)); // send move decision to all listener, including matching component
+        }
       }
+      else if(gameStatus == GameCondition.WIN || gameStatus == GameCondition.DRAW)
+      {
+        for (ConnectionHandler viewer : clients)
+        {
+          viewer.sendLine.println(viewer.processRequest(ClientRequest.DO_CLEAR_MAP)); // send move decision to all listener, including matching component
+        }
+        
+        if (gameStatus == GameCondition.WIN)
+        {
+          game.player1.win += 1;
+          label5.setText(game.player1.name + " : " + String.valueOf(game.player1.win)); // update stat
+        }     
+      }    
     }
   }
 
-  public void button_connect()
+  public void button_connect() // no need inHandshake
   {
     try
     {      
@@ -98,7 +117,6 @@ class ConnectionEngine extends Thread
       Socket socket = new Socket(host, PORT);
 
       ConnectionHandler connection = new ConnectionHandler(socket, this.serverStatus, game, clients,true);
-      inHandshake.connection = connection;
       connection.handshake();
 
       if (connection.connected)
@@ -106,7 +124,6 @@ class ConnectionEngine extends Thread
         connection.start();
         clients.add(connection);
       }
-      inHandshake.connection = null;
     }
     catch(Exception e)
     {

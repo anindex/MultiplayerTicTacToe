@@ -6,7 +6,7 @@ enum ConnectionType {
 };
 enum ClientRequest
 {
-  GET_SERVER_STATUS, GET_GAME_STATE, GET_GAME_UPDATE, BYE
+  GET_SERVER_STATUS, GET_GAME_STATE, GET_GAME_UPDATE, GET_PLAYER_STAT, DO_CLEAR_MAP, BYE
 };
 
 
@@ -26,7 +26,7 @@ class ConnectionHandler extends Thread
 
   public ServerStateRef serverStatus;
 
-  public static final int PROMT_TIMEOUT = 3;
+  public static final int PROMT_TIMEOUT = 3000;
 
   public boolean isInitiator;
   public boolean answeredChallenge;
@@ -77,8 +77,7 @@ class ConnectionHandler extends Thread
       if (!processResponse(response))
       {
         System.out.println("Error on sending and receiving message! Connection will close!");
-        close();
-        this.connected = false; // for safety
+        close(); // for safety
       }
     }
     catch(Exception e)
@@ -93,7 +92,17 @@ class ConnectionHandler extends Thread
   {
     while (this.connected)
     {
-      String updateMessage = receiveLine.nextLine();
+      String updateMessage = "";
+      try
+      {
+        updateMessage = receiveLine.nextLine();
+      }
+      catch(Exception e)
+      {
+        e.printStackTrace();
+        System.out.println("Connection line close from target host! Close this connection");
+        close();
+      }
 
       processResponse(updateMessage);
     }
@@ -101,11 +110,12 @@ class ConnectionHandler extends Thread
 
   public void button_yes()
   {
+    this.answeredChallenge = true;
+
     sendLine.println("YES");
     this.type = ConnectionType.MATCHING;
     this.serverStatus.state = ServerState.MATCHING;
 
-    this.answeredChallenge = true;
     this.connected = true;
 
     window1.setVisible(false);
@@ -113,10 +123,9 @@ class ConnectionHandler extends Thread
 
   public void button_no()
   {
+    this.answeredChallenge = true;
     sendLine.println("NO");
     close();
-
-    this.answeredChallenge = true;
 
     window1.setVisible(false);
   }
@@ -145,6 +154,13 @@ class ConnectionHandler extends Thread
         System.out.println("Connection has error on closing!");
       }
     }
+    
+    if(this.type == ConnectionType.MATCHING || (this.type == ConnectionType.SPECTATOR && this.serverStatus.state == ServerState.SPECTATOR))
+    {
+      this.serverStatus.state = ServerState.STANDBY;
+    }
+    
+    this.connected = false;
   }
 
   public String processRequest(ClientRequest request)
@@ -181,13 +197,23 @@ class ConnectionHandler extends Thread
       }
 
       return gameState;
-    } else if (request == ClientRequest.GET_GAME_UPDATE)
+    } 
+    else if (request == ClientRequest.GET_PLAYER_STAT)
+    {
+      return ConnectionEngine.RESPONSE_PLAYER_STAT + ":" + game.player1.print() + " " + game.player2.print();
+    } 
+    else if (request == ClientRequest.GET_GAME_UPDATE)
     {
       return ConnectionEngine.RESPONSE_GAME_UPDATE + ":" + game.lastUpdate.toString();
     } else if (request == ClientRequest.BYE)
     {
       return "BYE:";
-    } else
+    } 
+    else if (request == ClientRequest.DO_CLEAR_MAP)
+    {
+      return "CLEARMAP:";
+    }
+    else
     {
       return ConnectionEngine.INVALID;
     }
@@ -204,12 +230,21 @@ class ConnectionHandler extends Thread
         if (isInitiator)
         {
           sendChallenge();
-
+          
+          game.player.reset();
+          game.player1.reset();
+          game.player2.reset();
+          
           game.player.markType = CellType.NOUGHT;
+          game.inTurned = false;
         } else
         {
           promtChallenge(PROMT_TIMEOUT);
-
+          
+          game.player.reset();
+          game.player1.reset();
+          game.player2.reset();
+          
           game.player.markType = CellType.CROSS;
           game.inTurned = true;
         }
@@ -218,14 +253,36 @@ class ConnectionHandler extends Thread
         this.type = ConnectionType.SPECTATOR;
         this.serverStatus.state = ServerState.SPECTATOR;
         this.connected = true;
-
-        processResponse(receiveLine.nextLine()); // update current game state
+        
+        String map = "", playerStat = "";
+        try
+        {
+          map = receiveLine.nextLine();
+          playerStat = receiveLine.nextLine();
+        }
+        catch(Exception e)
+        {
+          e.printStackTrace();
+          System.out.println("Connection line close from target host! Close this connection");
+          close();
+        }
+        
+        processResponse(map); // update current game state
+        processResponse(playerStat); // update current game state
+        
+        window2.setVisible(true);
+        window0.setVisible(false);
+        
+        label5.setText(game.player1.name + " : " + String.valueOf(game.player1.win));
+        label6.setText(game.player2.name + " : " + String.valueOf(game.player2.win));
+        
       } else if (this.serverStatus.state == ServerState.MATCHING && targetState == ServerState.STANDBY)
       {
         this.type = ConnectionType.SPECTATOR;
         this.connected = true;
 
         sendLine.println(processRequest(ClientRequest.GET_GAME_STATE));
+        sendLine.println(processRequest(ClientRequest.GET_PLAYER_STAT));
       } else if (this.serverStatus.state == ServerState.SPECTATOR && targetState == ServerState.STANDBY)
       {
         promtChallenge(PROMT_TIMEOUT);
@@ -274,23 +331,46 @@ class ConnectionHandler extends Thread
 
         for (ConnectionHandler viewer : clients)
         {
-          if(viewer != this)
+          if (viewer.type == ConnectionType.SPECTATOR)
           {
             viewer.sendLine.println(viewer.processRequest(ClientRequest.GET_GAME_UPDATE)); // send move decision to all viewers
-          }        
+          }
         }
       }
 
       return true;
-    } else if (message[0].equals(ConnectionEngine.BYE))
+    } 
+    else if (message[0].equals(ConnectionEngine.RESPONSE_PLAYER_STAT))
+    {
+      String[] players = message[1].split(" ", 0);  
+      String[] player1 = players[0].split(",", 0);
+      String[] player2 = players[1].split(",", 0);
+      
+      game.player1.name = player1[0];
+      game.player1.win = Integer.valueOf(player1[1]);
+      
+      game.player2.name = player2[0];
+      game.player2.win = Integer.valueOf(player2[1]);
+      
+      return true;
+    }
+    else if (message[0].equals(ConnectionEngine.RESPONSE_CLEAR_MAP))
+    {
+      game.gameState.clearMark();
+      
+      if(this.type == ConnectionType.MATCHING)
+      {
+        game.inTurned = true;
+        game.player2.win += 1; // receive winning from opponent, plus 1
+        
+        label6.setText(game.player2.name + " : " + String.valueOf(game.player2.win)); // update stat
+      }
+
+      return true;
+    }
+    else if (message[0].equals(ConnectionEngine.BYE))
     {
       close();
-      this.connected = false;
-
-      if (serverStatus.state == ServerState.SPECTATOR) // if MATCHING server disconnect this client, client turns to STANDBY 
-      {
-        serverStatus.state = ServerState.STANDBY;
-      }
 
       return true;
     } else
@@ -304,6 +384,7 @@ class ConnectionHandler extends Thread
     if (sendLine != null && receiveLine != null)
     {
       sendLine.println(game.player.name); //introduce yourself
+      String challenger = receiveLine.nextLine();
 
       String response = receiveLine.nextLine();
       if (response.equals("YES"))
@@ -311,6 +392,15 @@ class ConnectionHandler extends Thread
         this.type = ConnectionType.MATCHING;
         this.serverStatus.state = ServerState.MATCHING;
         this.connected = true;
+        
+        game.player1.name = game.player.name;
+        game.player2.name = challenger;
+        
+        window2.setVisible(true);
+        window0.setVisible(false);
+        
+        label5.setText(game.player1.name + " : " + String.valueOf(game.player1.win));
+        label6.setText(game.player2.name + " : " + String.valueOf(game.player2.win));
       } else
       {
         close();
@@ -324,17 +414,32 @@ class ConnectionHandler extends Thread
 
   private void promtChallenge(int timeout)
   {
+    sendLine.println(game.player.name); // introduce name to sender   
     String challenger = receiveLine.nextLine();
+    
     label4.setText(challenger + " want to challenge you!!! Accept?");
     window1.setVisible(true);
 
-    int then = second();
-    while ((second() - then < timeout) && !answeredChallenge);
-
-    if (!this.connected && !answeredChallenge)
+    int then = millis();
+    
+    while (!this.answeredChallenge && (millis() - then <= timeout));
+    
+    if (!this.answeredChallenge)
     {
       button_no();
       System.out.println("Challenge acceptance timeout!");
+    }
+    
+    if (this.connected)
+    {
+      game.player1.name = game.player.name;
+      game.player2.name = challenger;
+      
+      window2.setVisible(true);
+      window0.setVisible(false);
+      
+      label5.setText(game.player1.name + " : " + String.valueOf(game.player1.win));
+      label6.setText(game.player2.name + " : " + String.valueOf(game.player2.win));
     }
   }
 } 
