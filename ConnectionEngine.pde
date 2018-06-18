@@ -1,4 +1,4 @@
-import java.io.*;
+import java.io.*; //<>// //<>//
 import java.util.*;
 import java.net.*;
 import java.lang.*;
@@ -12,7 +12,7 @@ class ConnectionEngine extends Thread
   public static final String RESPONSE_GAME_UPDATE = "GAMEUPDATE";
   public static final String RESPONSE_CLEAR_MAP = "CLEARMAP";
   public static final String RESPONSE_PLAYER_STAT = "PLAYERSTAT";
-  
+
   public static final String INVALID = "INVALID";
   public static final String BYE = "BYE";
 
@@ -53,6 +53,7 @@ class ConnectionEngine extends Thread
       try
       {
         clearDisconnectedConnections(); // clear dead connections
+        System.out.println("Wait for connection, has: " + clients.size());
 
         Socket incommingConnection = serverSocket.accept();
 
@@ -67,7 +68,7 @@ class ConnectionEngine extends Thread
         }
 
         inPromt.connection = null;
-        System.out.println(clients.size());
+        System.out.println("After process new connection: " + clients.size());
       }
       catch(Exception e)
       {
@@ -85,27 +86,26 @@ class ConnectionEngine extends Thread
       game.updateCell(move, game.player.markType);
       game.inTurned = false;
       GameCondition gameStatus = game.checkEndGame();
-      
-      if(gameStatus == GameCondition.CONTINUE)
+
+      if (gameStatus == GameCondition.CONTINUE)
       {
         for (ConnectionHandler viewer : clients)
         {
           viewer.sendLine.println(viewer.processRequest(ClientRequest.GET_GAME_UPDATE)); // send move decision to all listener, including matching component
         }
-      }
-      else if(gameStatus == GameCondition.WIN || gameStatus == GameCondition.DRAW)
+      } else if (gameStatus == GameCondition.WIN || gameStatus == GameCondition.DRAW)
       {
         for (ConnectionHandler viewer : clients)
         {
           viewer.sendLine.println(viewer.processRequest(ClientRequest.DO_CLEAR_MAP)); // send move decision to all listener, including matching component
         }
-        
+
         if (gameStatus == GameCondition.WIN)
         {
           game.player1.win += 1;
           label5.setText(game.player1.name + " : " + String.valueOf(game.player1.win)); // update stat
-        }     
-      }    
+        }
+      }
     }
   }
 
@@ -122,8 +122,8 @@ class ConnectionEngine extends Thread
       System.out.println("Host " + textfield1.getText() + " does not exit or refused!");  
       return;
     }
-      
-    ConnectionHandler connection = new ConnectionHandler(socket, this.serverStatus, game, clients,true);
+
+    ConnectionHandler connection = new ConnectionHandler(socket, this.serverStatus, game, clients, true);
     try
     {
       connection.handshake();
@@ -133,25 +133,25 @@ class ConnectionEngine extends Thread
       System.out.println("Target host: " + textfield1.getText() + " handshake failed!");
       connection.close();
     }
-    
+
     if (connection.connected)
     {
       connection.start();
       clients.add(connection);
-    }   
+    }
   }
 
   public void button_resign()
   {
-    for(ConnectionHandler connection : clients) // find and close spectator connection
+    for (ConnectionHandler connection : clients) // find and close spectator connection
+    {
+      if ((serverStatus.state == ServerState.MATCHING && connection.type == ConnectionType.MATCHING) || (serverStatus.state == ServerState.SPECTATOR && connection.type == ConnectionType.SPECTATOR)) // for safety
       {
-        if((serverStatus.state == ServerState.MATCHING && connection.type == ConnectionType.MATCHING) || (serverStatus.state == ServerState.SPECTATOR && connection.type == ConnectionType.SPECTATOR)) // for safety
-        {
-          connection.sendLine.println(ClientRequest.BYE);
-          connection.close();
-          break;
-        }
+        connection.sendLine.println(ClientRequest.BYE);
+        connection.close();
+        break;
       }
+    }
   }
 
   private void clearDisconnectedConnections()

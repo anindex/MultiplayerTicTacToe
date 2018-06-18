@@ -49,7 +49,7 @@ public void button_no(GButton source, GEvent event) {
 } 
 
 public void name_change(GTextField source, GEvent event) { 
-  if(event == GEvent.LOST_FOCUS)
+  if(event == GEvent.ENTERED || event == GEvent.LOST_FOCUS)
   {
     server.game.name_change();
   } 

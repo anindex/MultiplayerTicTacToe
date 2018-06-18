@@ -199,6 +199,7 @@ class ConnectionHandler extends Thread
     }
     
     this.connected = false;
+    clients.remove(this); // remove this connection
   }
 
   public String processRequest(ClientRequest request)
