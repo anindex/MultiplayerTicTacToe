@@ -56,7 +56,7 @@ class ConnectionHandler extends Thread
     catch(Exception e)
     {
       e.printStackTrace();
-      System.out.println("Connection to " + this.hostname + " failed! Connection will close!");
+      System.out.println("[ConnectionHandler.contructor]Connection to " + this.hostname + " failed! Connection will close!");
       close();
     }
   }
@@ -82,8 +82,7 @@ class ConnectionHandler extends Thread
     }
     catch(Exception e)
     {
-      e.printStackTrace();
-      System.out.println("Connection to " + this.hostname + " failed! Connection will close!");
+      System.out.println("[ConnectionHandler.handshake]Connection to " + this.hostname + " failed! Connection will close!");
       close();
     }
   }
@@ -100,7 +99,7 @@ class ConnectionHandler extends Thread
       catch(Exception e)
       {
         e.printStackTrace();
-        System.out.println("Connection line close from target host! Close this connection");
+        System.out.println("[ConnectionHandler.run]Connection line close from target host! Close this connection");
         close();
       }
 
@@ -166,7 +165,7 @@ class ConnectionHandler extends Thread
       catch(Exception e)
       {
         e.printStackTrace();
-        System.out.println("Connection has error on closing!");
+        System.out.println("[ConnectionHandler.close]Connection has error on closing!");
       }
     }
     
@@ -436,7 +435,7 @@ class ConnectionHandler extends Thread
       }
     } else
     {
-      System.out.println("Connection to " + this.hostname + " initialize failed! Connection will close!");
+      System.out.println("[ConnectionHandler.sendChallenge]Connection to " + this.hostname + " initialize failed! Connection will close!");
       close();
     }
   }

@@ -41,7 +41,7 @@ class ConnectionEngine extends Thread
     }
     catch(Exception e)
     {
-      System.out.println("Server initialization failed! Exiting.");
+      System.out.println("[ConnectionEngine.contructor]Server initialization failed! Exiting.");
       System.exit(1);
     }
   }
@@ -52,7 +52,6 @@ class ConnectionEngine extends Thread
     {
       try
       {
-        clearDisconnectedConnections(); // clear dead connections
         System.out.println("Wait for connection, has: " + clients.size());
 
         Socket incommingConnection = serverSocket.accept();
@@ -72,7 +71,7 @@ class ConnectionEngine extends Thread
       }
       catch(Exception e)
       {
-        System.out.println("Incomming connection establishing failed!");
+        System.out.println("[ConnectionEngine.run]Incomming connection establishing failed!");
       }
     }
   }
@@ -119,7 +118,7 @@ class ConnectionEngine extends Thread
     }
     catch(Exception e)
     {
-      System.out.println("Host " + textfield1.getText() + " does not exit or refused!");  
+      System.out.println("[ConnectionEngine.button_connect]Host " + textfield1.getText() + " does not exit or refused!");  
       return;
     }
 
@@ -130,7 +129,7 @@ class ConnectionEngine extends Thread
     }
     catch(Exception e)
     {
-      System.out.println("Target host: " + textfield1.getText() + " handshake failed!");
+      System.out.println("[ConnectionEngine.button_connect]Target host: " + textfield1.getText() + " handshake failed!");
       connection.close();
     }
 
@@ -150,17 +149,6 @@ class ConnectionEngine extends Thread
         connection.sendLine.println(ClientRequest.BYE);
         connection.close();
         break;
-      }
-    }
-  }
-
-  private void clearDisconnectedConnections()
-  {
-    for (ConnectionHandler connection : clients)
-    {
-      if (!connection.connected)
-      {
-        clients.remove(connection);
       }
     }
   }
