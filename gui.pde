@@ -26,8 +26,8 @@ synchronized public void win_draw3(PApplet appc, GWinData data) { //_CODE_:windo
   appc.background(230);
 } //_CODE_:window1:964564:
 
-public void button4_click1(GButton source, GEvent event) { //_CODE_:button3:403542:
-  println("button4 - GButton >> GEvent." + event + " @ " + millis());
+public void button_resign(GButton source, GEvent event) { //_CODE_:button3:403542:
+  server.button_resign();
 } //_CODE_:button3:403542:
 
 public void button_connect(GButton source, GEvent event) { 
@@ -133,7 +133,7 @@ public void createGUI(){
   label6.setOpaque(false);
   button4 = new GButton(window2, 150, 30, 80, 30);
   button4.setText("Resign");
-  button4.addEventHandler(this, "button4_click1");
+  button4.addEventHandler(this, "button_resign");
   window2.loop();
 }
 

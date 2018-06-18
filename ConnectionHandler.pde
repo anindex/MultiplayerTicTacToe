@@ -110,6 +110,21 @@ class ConnectionHandler extends Thread
 
   public void button_yes()
   {
+    //if being an SPECTATOR
+    if(this.serverStatus.state == ServerState.SPECTATOR)
+    {
+      sendLine.println(processRequest(ClientRequest.BYE)); // signal host server to close this connection
+      for(ConnectionHandler connection : clients) // find and close spectator connection
+      {
+        if(connection.type == ConnectionType.SPECTATOR)
+        {
+          connection.close();
+        }
+      }
+      
+      game.gameState.clearMark();
+    }
+    
     this.answeredChallenge = true;
 
     sendLine.println("YES");
@@ -155,9 +170,32 @@ class ConnectionHandler extends Thread
       }
     }
     
-    if(this.type == ConnectionType.MATCHING || (this.type == ConnectionType.SPECTATOR && this.serverStatus.state == ServerState.SPECTATOR))
+    if(this.serverStatus.state == ServerState.MATCHING && this.type == ConnectionType.MATCHING)
     {
       this.serverStatus.state = ServerState.STANDBY;
+      
+      for(ConnectionHandler connection : clients)
+      {
+        if(connection != this) //this connection has already been closed 
+        {
+          connection.sendLine.println(connection.processRequest(ClientRequest.BYE));
+          connection.close();
+        }
+      }
+      
+      game.gameState.clearMark();
+      
+      window0.setVisible(true);  // when the connection lost, we need to do this
+      window2.setVisible(false);
+    }
+    else if(this.serverStatus.state == ServerState.SPECTATOR && this.type == ConnectionType.SPECTATOR) // if the connection close from host, we need to set menu appear and stat window to disappear 
+    {
+      this.serverStatus.state = ServerState.STANDBY;
+      
+      game.gameState.clearMark();
+      
+      window0.setVisible(true); 
+      window2.setVisible(false);
     }
     
     this.connected = false;
@@ -254,19 +292,9 @@ class ConnectionHandler extends Thread
         this.serverStatus.state = ServerState.SPECTATOR;
         this.connected = true;
         
-        String map = "", playerStat = "";
-        try
-        {
-          map = receiveLine.nextLine();
-          playerStat = receiveLine.nextLine();
-        }
-        catch(Exception e)
-        {
-          e.printStackTrace();
-          System.out.println("Connection line close from target host! Close this connection");
-          close();
-        }
-        
+        String map = receiveLine.nextLine();
+        String playerStat = receiveLine.nextLine();
+          
         processResponse(map); // update current game state
         processResponse(playerStat); // update current game state
         

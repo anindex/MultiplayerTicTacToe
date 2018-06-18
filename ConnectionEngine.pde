@@ -111,28 +111,47 @@ class ConnectionEngine extends Thread
 
   public void button_connect() // no need inHandshake
   {
+    Socket socket;
     try
     {      
       InetAddress host = InetAddress.getByName(textfield1.getText());
-      Socket socket = new Socket(host, PORT);
-
-      ConnectionHandler connection = new ConnectionHandler(socket, this.serverStatus, game, clients,true);
-      connection.handshake();
-
-      if (connection.connected)
-      {
-        connection.start();
-        clients.add(connection);
-      }
+      socket = new Socket(host, PORT);
     }
     catch(Exception e)
     {
-      System.out.println("Host " + textfield1.getText() + " does not exit or refused!");
+      System.out.println("Host " + textfield1.getText() + " does not exit or refused!");  
+      return;
     }
+      
+    ConnectionHandler connection = new ConnectionHandler(socket, this.serverStatus, game, clients,true);
+    try
+    {
+      connection.handshake();
+    }
+    catch(Exception e)
+    {
+      System.out.println("Target host: " + textfield1.getText() + " handshake failed!");
+      connection.close();
+    }
+    
+    if (connection.connected)
+    {
+      connection.start();
+      clients.add(connection);
+    }   
   }
 
   public void button_resign()
   {
+    for(ConnectionHandler connection : clients) // find and close spectator connection
+      {
+        if((serverStatus.state == ServerState.MATCHING && connection.type == ConnectionType.MATCHING) || (serverStatus.state == ServerState.SPECTATOR && connection.type == ConnectionType.SPECTATOR)) // for safety
+        {
+          connection.sendLine.println(ClientRequest.BYE);
+          connection.close();
+          break;
+        }
+      }
   }
 
   private void clearDisconnectedConnections()
