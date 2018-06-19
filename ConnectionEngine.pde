@@ -83,9 +83,11 @@ class ConnectionEngine extends Thread
     if (game.inTurned)
     {
       game.updateCell(move, game.player.markType);
-      game.inTurned = false;
+      
       GameCondition gameStatus = game.checkEndGame();
       System.out.println(gameStatus);
+      
+      game.inTurned = false;     
 
       if (gameStatus == GameCondition.CONTINUE)
       {

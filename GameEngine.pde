@@ -129,9 +129,12 @@ class GameEngine
   public void updateCell(Coordinate pos, CellType type)
   {
     gameState.cells[pos.x][pos.y].type = type;
+    
     lastUpdate.x = pos.x;
     lastUpdate.y = pos.y;
     lastUpdate.type = type;
+    
+    player.lastMove = pos;
   }
   
   public void name_change()
