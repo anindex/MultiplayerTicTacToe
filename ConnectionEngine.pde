@@ -85,6 +85,7 @@ class ConnectionEngine extends Thread
       game.updateCell(move, game.player.markType);
       game.inTurned = false;
       GameCondition gameStatus = game.checkEndGame();
+      System.out.println(gameStatus);
 
       if (gameStatus == GameCondition.CONTINUE)
       {
@@ -137,6 +138,10 @@ class ConnectionEngine extends Thread
     {
       connection.start();
       clients.add(connection);
+    }
+    else
+    {
+      connection.close();
     }
   }
 

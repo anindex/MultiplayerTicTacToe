@@ -109,6 +109,9 @@ class ConnectionHandler extends Thread
 
   public void button_yes()
   {
+    this.answeredChallenge = true;
+    this.connected = true;
+    
     //if being an SPECTATOR
     if(this.serverStatus.state == ServerState.SPECTATOR)
     {
@@ -123,14 +126,10 @@ class ConnectionHandler extends Thread
       
       game.gameState.clearMark();
     }
-    
-    this.answeredChallenge = true;
 
     sendLine.println("YES");
     this.type = ConnectionType.MATCHING;
     this.serverStatus.state = ServerState.MATCHING;
-
-    this.connected = true;
 
     window1.setVisible(false);
   }
@@ -450,10 +449,24 @@ class ConnectionHandler extends Thread
 
     int then = millis();
     
-    while (!this.answeredChallenge && (millis() - then <= timeout));
+    while (true)
+    {
+      int now = millis();
+      if(now - then > timeout)
+      {
+        break;
+      }
+      
+      if(this.answeredChallenge)
+      {
+        break;
+      }
+    }
+    println("YES answer!");
     
     if (!this.answeredChallenge)
     {
+      println("NO answer!");
       button_no();
       System.out.println("Challenge acceptance timeout!");
     }
