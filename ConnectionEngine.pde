@@ -107,6 +107,8 @@ class ConnectionEngine extends Thread
           game.player1.win += 1;
           label5.setText(game.player1.name + " : " + String.valueOf(game.player1.win)); // update stat
         }
+        
+        game.gameState.clearMark();
       }
     }
   }

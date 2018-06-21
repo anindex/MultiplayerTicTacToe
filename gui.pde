@@ -78,7 +78,7 @@ public void createGUI(){
   textarea1.setOpaque(true);
   label2 = new GLabel(window0, 5, 45, 120, 23);
   label2.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
-  label2.setText("Available Hosts");
+  label2.setText("Scanning Hosts...");
   label2.setTextBold();
   label2.setOpaque(false);
   textfield1 = new GTextField(window0, 134, 74, 145, 28, G4P.SCROLLBARS_NONE);

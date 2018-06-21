@@ -3,6 +3,7 @@ import g4p_controls.*;
 Grid grid;
 GameEngine game;
 Player player;
+HostScanner scanner;
 
 ConnectionEngine server;
 
@@ -24,6 +25,8 @@ void setup()
     game = new GameEngine(grid, player);
     
     server = new ConnectionEngine(game);
+    
+    scanner = new HostScanner();
   }
   catch (InvalidResolution e)
   {
@@ -34,7 +37,13 @@ void setup()
   window1.setVisible(false);
   window2.setVisible(false);
   
+  if(scanner != null)
+  {
+    label1.setText("Your IP: " + scanner.serverAddress);
+  }
+  
   server.start();
+  scanner.start();
 }
 
 void draw()
