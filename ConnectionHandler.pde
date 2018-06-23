@@ -426,8 +426,8 @@ class ConnectionHandler extends Thread
         window2.setVisible(true);
         window0.setVisible(false);
         
-        label5.setText(game.player1.name + " : " + String.valueOf(game.player1.win));
-        label6.setText(game.player2.name + " : " + String.valueOf(game.player2.win));
+        label5.setText(game.player1.name + " : " + String.valueOf(0));
+        label6.setText(game.player2.name + " : " + String.valueOf(0));
       } else
       {
         close();
@@ -479,8 +479,8 @@ class ConnectionHandler extends Thread
       window2.setVisible(true);
       window0.setVisible(false);
       
-      label5.setText(game.player1.name + " : " + String.valueOf(game.player1.win));
-      label6.setText(game.player2.name + " : " + String.valueOf(game.player2.win));
+      label5.setText(game.player1.name + " : " + String.valueOf(0));
+      label6.setText(game.player2.name + " : " + String.valueOf(0));
     }
   }
 } 
