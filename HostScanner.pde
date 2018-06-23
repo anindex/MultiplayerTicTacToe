@@ -1,7 +1,7 @@
 class HostScanner extends Thread
 {
   public String serverAddress;
-  public static final int TIMEOUT = 1000;
+  public static final int TIMEOUT = 500;
 
   public HostScanner() 
   {
@@ -40,7 +40,7 @@ class HostScanner extends Thread
       {
         if (InetAddress.getByName(host).isReachable(TIMEOUT))
         {
-           textarea1.insertText(host);
+           textarea1.insertText(host, i - 2, 0);
         }
       }  
       catch(Exception e)
