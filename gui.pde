@@ -1,19 +1,3 @@
-/* =========================================================
- * ====                   WARNING                        ===
- * =========================================================
- * The code in this tab has been generated from the GUI form
- * designer and care should be taken when editing this file.
- * Only add/edit code inside the event handlers i.e. only
- * use lines between the matching comment tags. e.g.
-
- void myBtnEvents(GButton button) { //_CODE_:button1:12356:
-     // It is safe to enter your event code here  
- } //_CODE_:button1:12356:
- 
- * Do not rename this tab!
- * =========================================================
- */
-
 synchronized public void win_draw1(PApplet appc, GWinData data) { //_CODE_:window1:964564:
   appc.background(230);
 } //_CODE_:window1:964564:
@@ -69,7 +53,7 @@ public void createGUI(){
   window0.noLoop();
   window0.setActionOnClose(G4P.KEEP_OPEN);
   window0.addDrawHandler(this, "win_draw1");
-  label1 = new GLabel(window0, 99, 5, 91, 29);
+  label1 = new GLabel(window0, 99, 5, 100, 35);
   label1.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
   label1.setText("Main Menu");
   label1.setTextBold();

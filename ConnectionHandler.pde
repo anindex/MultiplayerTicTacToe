@@ -324,13 +324,13 @@ class ConnectionHandler extends Thread
       String[] listOfCross = marks[0].split(";", 0);
       String[] listOfNought = marks[1].split(";", 0);
 
-      for (int i = 0; i < listOfCross.length - 1; i++)
+      for (int i = 0; i < listOfCross.length; i++)
       {
         String[] cross = listOfCross[i].split(",", 0);
         game.gameState.cells[Integer.valueOf(cross[0])][Integer.valueOf(cross[1])].type = CellType.CROSS;
       }
 
-      for (int i = 0; i < listOfNought.length - 1; i++)
+      for (int i = 0; i < listOfNought.length; i++)
       {
         String[] nought = listOfNought[i].split(",", 0);
         game.gameState.cells[Integer.valueOf(nought[0])][Integer.valueOf(nought[1])].type = CellType.NOUGHT;
@@ -346,10 +346,10 @@ class ConnectionHandler extends Thread
 
       if (markedCell[0].equals("C"))
       {
-        game.gameState.cells[x][y].type = CellType.CROSS;
+        game.updateCell(new Coordinate(x, y), CellType.CROSS);
       } else if (markedCell[0].equals("N"))
       {
-        game.gameState.cells[x][y].type = CellType.NOUGHT;
+        game.updateCell(new Coordinate(x, y), CellType.NOUGHT);
       }
 
       if (serverStatus.state == ServerState.MATCHING)
@@ -360,6 +360,8 @@ class ConnectionHandler extends Thread
         {
           if (viewer.type == ConnectionType.SPECTATOR)
           {
+            String sendUpdate = viewer.processRequest(ClientRequest.GET_GAME_UPDATE);
+            println(sendUpdate);
             viewer.sendLine.println(viewer.processRequest(ClientRequest.GET_GAME_UPDATE)); // send move decision to all viewers
           }
         }
