@@ -360,8 +360,6 @@ class ConnectionHandler extends Thread
         {
           if (viewer.type == ConnectionType.SPECTATOR)
           {
-            String sendUpdate = viewer.processRequest(ClientRequest.GET_GAME_UPDATE);
-            println(sendUpdate);
             viewer.sendLine.println(viewer.processRequest(ClientRequest.GET_GAME_UPDATE)); // send move decision to all viewers
           }
         }
@@ -393,6 +391,14 @@ class ConnectionHandler extends Thread
         game.player2.win += 1; // receive winning from opponent, plus 1
         
         label6.setText(game.player2.name + " : " + String.valueOf(game.player2.win)); // update stat
+        
+        for (ConnectionHandler viewer : clients)
+        {
+          if (viewer.type == ConnectionType.SPECTATOR)
+          {
+            viewer.sendLine.println(viewer.processRequest(ClientRequest.DO_CLEAR_MAP)); // send move decision to all viewers
+          }
+        }
       }
 
       return true;

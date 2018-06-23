@@ -13,7 +13,7 @@ class Player
     this.win = 0;
     this.lose = 0;
     
-    this.name = "";
+    this.name = "BLANK";
     lastMove = new Coordinate();
   }
   
