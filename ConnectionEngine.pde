@@ -1,4 +1,4 @@
-import java.io.*; //<>// //<>//
+import java.io.*; //<>// //<>// //<>//
 import java.util.*;
 import java.net.*;
 import java.lang.*;
@@ -80,7 +80,7 @@ class ConnectionEngine extends Thread
   {
     Coordinate move = game.gameState.retrieveCellIndex(moveX, moveY);
 
-    if (game.inTurned)
+    if (game.inTurned && game.gameState.retrieveCell(moveX, moveY).type == CellType.BLANK)
     {
       game.updateCell(move, game.player.markType);
       
